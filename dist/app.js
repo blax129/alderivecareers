@@ -14,7 +14,38 @@ $('#theme').addEventListener('click',()=>{document.documentElement.dataset.theme
 $('#year').textContent=new Date().getFullYear();
 let photo=0;const photos=[['community.jpg','Alderive Properties team at a community gathering'],['team.jpg','Alderive Properties team collaborating together'],['advocates.jpg','Alderive Properties team at a community advocacy event']];
 function changePhoto(delta){photo=(photo+delta+photos.length)%photos.length;$('#team-photo').src=`assets/${photos[photo][0]}`;$('#team-photo').alt=photos[photo][1];$('#photo-count').textContent=`0${photo+1} / 03`;}
-$('#prev-photo').addEventListener('click',()=>changePhoto(-1));$('#next-photo').addEventListener('click',()=>changePhoto(1));
+const photoMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let photosPaused = photoMotion.matches;
+let photoTimer;
+const photoSection = document.querySelector('.community');
+const playbackButton = $('#photo-playback');
+function advancePhoto(delta) {
+  changePhoto(delta);
+  if (!photoMotion.matches) $('#team-photo').animate([
+    {opacity: .3, transform: `translateX(${delta > 0 ? 14 : -14}px)`},
+    {opacity: 1, transform: 'translateX(0)'}
+  ], {duration: 450, easing: 'ease-out'});
+}
+function schedulePhotos() {
+  clearInterval(photoTimer);
+  playbackButton.textContent = photosPaused ? '▶' : 'Ⅱ';
+  playbackButton.setAttribute('aria-label', photosPaused ? 'Play automatic team photos' : 'Pause automatic team photos');
+  if (photosPaused || document.hidden || $('#landing').hidden || photoSection.matches(':hover') || photoSection.contains(document.activeElement)) return;
+  photoTimer = setInterval(() => advancePhoto(1), 5000);
+}
+$('#prev-photo').addEventListener('click', () => { advancePhoto(-1); schedulePhotos(); });
+$('#next-photo').addEventListener('click', () => { advancePhoto(1); schedulePhotos(); });
+playbackButton.addEventListener('click', () => { photosPaused = !photosPaused; schedulePhotos(); });
+photoSection.addEventListener('mouseenter', schedulePhotos);
+photoSection.addEventListener('mouseleave', schedulePhotos);
+photoSection.addEventListener('focusin', schedulePhotos);
+photoSection.addEventListener('focusout', () => setTimeout(schedulePhotos, 0));
+document.addEventListener('visibilitychange', schedulePhotos);
+window.addEventListener('hashchange', () => setTimeout(schedulePhotos, 0));
+photoMotion.addEventListener('change', () => { photosPaused = photoMotion.matches; schedulePhotos(); });
+photos.forEach(([file]) => { const preload = new Image(); preload.src = `assets/${file}`; });
+schedulePhotos();
+
 function route(){const applying=location.hash==='#apply';$('#landing').hidden=applying;$('#application').hidden=!applying;$('#floating-apply').hidden=applying;document.title=applying?'Apply · Alderive Properties':'Careers · Alderive Properties';if(applying){render();window.scrollTo(0,0)}else if(location.hash&&$(location.hash)){$(location.hash).scrollIntoView()}else{window.scrollTo(0,0)}}
 window.addEventListener('hashchange',route);
 function fieldHTML(f){const attrs=`id="${f.name}" name="${f.name}" ${f.optional?'':'required'}`;let input;if(f.options){input=`<select ${attrs}><option value="">Select an option</option>${f.options.map(o=>`<option ${answers[f.name]===o?'selected':''}>${escapeHTML(o)}</option>`).join('')}</select>`}else if(f.type==='textarea'){input=`<textarea ${attrs} maxlength="1500" rows="4">${escapeHTML(answers[f.name]||'')}</textarea>`}else{input=`<input ${attrs} type="${f.type}" maxlength="200" autocomplete="${f.autocomplete||'off'}" value="${escapeHTML(answers[f.name]||'')}">`}return `<label class="field" for="${f.name}">${f.label}${input}</label>`;}
