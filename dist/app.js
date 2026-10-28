@@ -13,12 +13,9 @@ function updateTheme(){const dark=document.documentElement.dataset.theme==='dark
 $('#theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';try{localStorage.setItem('alderive-theme',document.documentElement.dataset.theme)}catch(e){}updateTheme()});updateTheme();
 $('#year').textContent=new Date().getFullYear();
 let photo=0;const photos=[['community.jpg','Alderive Properties team at a community gathering'],['team.jpg','Alderive Properties team collaborating together'],['advocates.jpg','Alderive Properties team at a community advocacy event']];
-function changePhoto(delta){photo=(photo+delta+photos.length)%photos.length;$('#team-photo').src=`assets/${photos[photo][0]}`;$('#team-photo').alt=photos[photo][1];$('#photo-count').textContent=`0${photo+1} / 03`;}
+function changePhoto(delta){photo=(photo+delta+photos.length)%photos.length;$('#team-photo').src=`assets/${photos[photo][0]}`;$('#team-photo').alt=photos[photo][1];}
 const photoMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-let photosPaused = photoMotion.matches;
 let photoTimer;
-const photoSection = document.querySelector('.community');
-const playbackButton = $('#photo-playback');
 function advancePhoto(delta) {
   changePhoto(delta);
   if (!photoMotion.matches) $('#team-photo').animate([
@@ -28,21 +25,12 @@ function advancePhoto(delta) {
 }
 function schedulePhotos() {
   clearInterval(photoTimer);
-  playbackButton.textContent = photosPaused ? '▶' : 'Ⅱ';
-  playbackButton.setAttribute('aria-label', photosPaused ? 'Play automatic team photos' : 'Pause automatic team photos');
-  if (photosPaused || document.hidden || $('#landing').hidden || photoSection.matches(':hover') || photoSection.contains(document.activeElement)) return;
-  photoTimer = setInterval(() => advancePhoto(1), 5000);
+  if (photoMotion.matches || document.hidden || location.hash === '#apply') return;
+  photoTimer = setInterval(() => advancePhoto(1), 2000);
 }
-$('#prev-photo').addEventListener('click', () => { advancePhoto(-1); schedulePhotos(); });
-$('#next-photo').addEventListener('click', () => { advancePhoto(1); schedulePhotos(); });
-playbackButton.addEventListener('click', () => { photosPaused = !photosPaused; schedulePhotos(); });
-photoSection.addEventListener('mouseenter', schedulePhotos);
-photoSection.addEventListener('mouseleave', schedulePhotos);
-photoSection.addEventListener('focusin', schedulePhotos);
-photoSection.addEventListener('focusout', () => setTimeout(schedulePhotos, 0));
 document.addEventListener('visibilitychange', schedulePhotos);
 window.addEventListener('hashchange', () => setTimeout(schedulePhotos, 0));
-photoMotion.addEventListener('change', () => { photosPaused = photoMotion.matches; schedulePhotos(); });
+photoMotion.addEventListener('change', schedulePhotos);
 photos.forEach(([file]) => { const preload = new Image(); preload.src = `assets/${file}`; });
 schedulePhotos();
 
