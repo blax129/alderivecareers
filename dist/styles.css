@@ -95,3 +95,8 @@ html[data-theme="light"] .theme-toggle .theme-icon--moon{ color: #718073; }
 .process-dots button[aria-current="step"]::after{background:var(--accent);transform:scale(1.4)}
 .process-count{font-size:11px;color:var(--muted);white-space:nowrap}
 @media(max-width:600px){.process-slideshow.is-ready .steps article{padding:24px 20px}.process-slideshow h3{font-size:21px}.process-slideshow .steps p{font-size:14px}.process-controls{gap:10px}}
+
+/* Keep the team images clear; navigation sits below the photos. */
+.community > .photo-controls{position:static;justify-content:flex-end;color:var(--ink);margin-top:14px}
+.community > .photo-controls button{color:var(--ink);border-color:var(--line);background:var(--surface)}
+.community > .photo-controls button:hover{background:var(--soft)}
