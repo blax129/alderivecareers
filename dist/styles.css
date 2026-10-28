@@ -100,3 +100,12 @@ html[data-theme="light"] .theme-toggle .theme-icon--moon{ color: #718073; }
 .community > .photo-controls{position:static;justify-content:flex-end;color:var(--ink);margin-top:14px}
 .community > .photo-controls button{color:var(--ink);border-color:var(--line);background:var(--surface)}
 .community > .photo-controls button:hover{background:var(--soft)}
+
+/* Reveal the following step before navigation. */
+.process-slideshow{max-width:900px}
+.process-slideshow.is-ready .steps{overflow:hidden;grid-template-columns:76%}
+.process-slideshow.is-ready .steps article{text-align:left;transition:transform .3s ease,opacity .3s ease}
+.process-slideshow.is-ready .steps article.is-next{transform:translateX(calc(100% + 18px));background:var(--soft);opacity:.78}
+.process-slideshow .steps p{margin:0}
+@media(max-width:600px){.process-slideshow.is-ready .steps{grid-template-columns:78%}.process-slideshow.is-ready .steps article{padding:24px 18px}.process-slideshow.is-ready .steps article.is-next{transform:translateX(calc(100% + 12px))}}
+@media(prefers-reduced-motion:reduce){.process-slideshow.is-ready .steps article{transition:none}}

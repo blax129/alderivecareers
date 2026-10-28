@@ -37,7 +37,9 @@ route();
   function show(index) {
     current = (index + slides.length) % slides.length;
     slides.forEach((slide, i) => {
-      slide.setAttribute('aria-hidden', String(i !== current));
+      const isNext = i === (current + 1) % slides.length;
+      slide.classList.toggle('is-next', isNext);
+      slide.setAttribute('aria-hidden', String(i !== current && !isNext));
       slide.setAttribute('role', 'group');
       slide.setAttribute('aria-roledescription', 'slide');
       slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
