@@ -27,3 +27,51 @@ function applicationText(){return `ALDERIVE PROPERTIES — LISTING ASSISTANT APP
 function download(){capture();const blob=new Blob([applicationText()],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='alderive-application.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('#application-form').addEventListener('submit',event=>{event.preventDefault();capture();if(step<steps.length){go(step+1);return;}const text=applicationText();const href=`mailto:${email}?subject=${encodeURIComponent('Listing assistant application — '+answers.name)}&body=${encodeURIComponent(text)}`;$('#email-status').innerHTML=`<div class="email-ready"><h3>Your application is ready to send.</h3><p>This website has not submitted your application. ${href.length>7500?'Your answers are long, so download them and attach the file to an email.':'Use the link below to open your email app, then review and send the draft.'}</p>${href.length<=7500?`<a id="email-draft" href="${escapeHTML(href)}">Open application email ↗</a>`:''}<p>If your email app does not open, download your answers and email them to <a href="mailto:${email}">${email}</a>.</p></div>`;$('#email-status').scrollIntoView({block:'center'});});
 route();
+
+// Application journey: buttons, keyboard navigation, and touch swipe.
+(() => {
+  const carousel = document.querySelector('.process-slideshow');
+  const slides = [...carousel.querySelectorAll('.steps article')];
+  const dots = [...carousel.querySelectorAll('[data-process-slide]')];
+  let current = 0;
+  function show(index) {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((slide, i) => {
+      slide.setAttribute('aria-hidden', String(i !== current));
+      slide.setAttribute('role', 'group');
+      slide.setAttribute('aria-roledescription', 'slide');
+      slide.setAttribute('aria-label', `${i + 1} of ${slides.length}`);
+    });
+    dots.forEach((dot, i) => {
+      if (i === current) dot.setAttribute('aria-current', 'step');
+      else dot.removeAttribute('aria-current');
+    });
+    carousel.querySelector('.process-count').textContent = `Step ${current + 1} of ${slides.length}`;
+  }
+  carousel.classList.add('is-ready');
+  carousel.querySelector('.process-controls').hidden = false;
+  carousel.querySelector('[data-process-prev]').addEventListener('click', () => show(current - 1));
+  carousel.querySelector('[data-process-next]').addEventListener('click', () => show(current + 1));
+  dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+  carousel.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      show(current + (event.key === 'ArrowRight' ? 1 : -1));
+    }
+  });
+  let start;
+  carousel.addEventListener('touchstart', event => {
+    const touch = event.touches[0];
+    start = event.touches.length === 1 ? {x: touch.clientX, y: touch.clientY} : null;
+  }, {passive: true});
+  carousel.addEventListener('touchend', event => {
+    if (!start) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) show(current + (dx < 0 ? 1 : -1));
+    start = null;
+  }, {passive: true});
+  carousel.addEventListener('touchcancel', () => { start = null; });
+  show(0);
+})();
