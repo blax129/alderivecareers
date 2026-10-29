@@ -109,3 +109,5 @@ html[data-theme="light"] .theme-toggle .theme-icon--moon{ color: #718073; }
 .process-slideshow .steps p{margin:0}
 @media(max-width:600px){.process-slideshow.is-ready .steps{grid-template-columns:78%}.process-slideshow.is-ready .steps article{padding:24px 18px}.process-slideshow.is-ready .steps article.is-next{transform:translateX(calc(100% + 12px))}}
 @media(prefers-reduced-motion:reduce){.process-slideshow.is-ready .steps article{transition:none}}
+.faqs summary:after{content:'';width:8px;height:8px;top:50%;right:5px;border-right:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);font-size:0;transform:translateY(-75%) rotate(45deg);transition:transform .18s ease}
+.faqs details[open] summary:after{content:'';transform:translateY(-25%) rotate(225deg)}
