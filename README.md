@@ -6,6 +6,12 @@ A responsive, buildless hiring website following the TenantFirst hiring referenc
 
 Run `python3 -m http.server 4173 --directory dist` from this folder, then visit http://localhost:4173.
 
+## Netlify deployment
+
+Connect Netlify to `blax129/alderivecareers` and deploy the `main` branch. The root `netlify.toml` sets the publish directory to `dist` with no build command. This places `dist/index.html` at the deployed site root. Git-connected Netlify sites redeploy when changes are pushed to `main`.
+
+For manual drag-and-drop deployments, upload the `dist` folder itself. The application URL is `/#apply`.
+
 ## Application delivery
 
 The six-step application validates required fields, supports editing answers, and submits all answers and consent to `https://formspree.io/f/xgaazpka` using a Formspree AJAX POST. Success is shown only after an accepted response. Pending and successful submissions are locked to prevent duplicate clicks; failed requests preserve answers for retry. Applicants can download a plain-text copy. Submission storage and notifications are managed by the endpoint owner in Formspree. Unsubmitted answers remain in page memory and are cleared on reload. Only the light/dark theme preference is saved locally.

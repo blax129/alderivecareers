@@ -1,0 +1,5 @@
+# This website is buildless; its deployable files are already in dist.
+[build]
+  base = "."
+  publish = "dist"
+  command = ""
