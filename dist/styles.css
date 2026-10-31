@@ -111,3 +111,13 @@ html[data-theme="light"] .theme-toggle .theme-icon--moon{ color: #718073; }
 @media(prefers-reduced-motion:reduce){.process-slideshow.is-ready .steps article{transition:none}}
 .faqs summary:after{content:'';width:8px;height:8px;top:50%;right:5px;border-right:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);font-size:0;transform:translateY(-75%) rotate(45deg);transition:transform .18s ease}
 .faqs details[open] summary:after{content:'';transform:translateY(-25%) rotate(225deg)}
+
+/* Keep phone form controls readable without focus zoom or intrinsic overflow. */
+@media(max-width:800px){
+  .application-grid>*,.application form,.field{min-width:0}
+  .field input,.field select,.field textarea{font-size:16px;max-width:100%;min-width:0}
+  .field select{text-overflow:ellipsis}
+  footer a{overflow-wrap:anywhere}
+  footer{padding-bottom:100px}
+  .theme-toggle{min-height:44px}
+}
