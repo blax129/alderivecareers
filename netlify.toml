@@ -3,3 +3,15 @@
   base = "."
   publish = "dist"
   command = ""
+
+[[redirects]]
+  from = "http://alderivecareers.com/*"
+  to = "https://alderivecareers.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.alderivecareers.com/*"
+  to = "https://alderivecareers.com/:splat"
+  status = 301
+  force = true
