@@ -25,3 +25,12 @@ The role terms ($500–$800/week depending on workload, accuracy, consistency, a
 - `dist/app.js`: application steps, review, Formspree submission, image carousel, theme toggle
 - `dist/assets/`: local Alderive logos and team photos
 
+
+## Branding
+
+- Company: Alderive Properties
+- Hiring page and Facebook page name: Alderive Properties Careers
+- Hiring website: https://alderivecareers.com/
+- Company website: https://alderiveproperties.com/
+- Hiring email: careers@alderiveproperties.com
+- Job title: Remote Rental Listing Assistant
