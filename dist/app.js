@@ -1,6 +1,9 @@
 'use strict';
 const $ = s => document.querySelector(s);
 const email = 'careers@alderiveproperties.com';
+const EMAILJS_SERVICE_ID = 'service_0g8i2pz';
+const EMAILJS_TEMPLATE_ID = 'template_wqcrlrz';
+const EMAILJS_PUBLIC_KEY = 'eZEDRj0X0xjAKoboP';
 const steps = [
  {title:'Contact details',short:'Contact',description:'Tell us how to address you and reach you about your application. Updates will be sent by text, so please provide a mobile number that can receive messages.',fields:[{name:'name',label:'Full name',type:'text',autocomplete:'name'},{name:'email',label:'Email address',type:'email',autocomplete:'email'},{name:'phone',label:'Mobile number (for application updates by text)',type:'tel',autocomplete:'tel'},{name:'usLocation',label:'Are you currently located in the United States?',options:['Yes','No']},{name:'state',label:'What state do you currently live in? (If outside the U.S., enter your region and country.)',type:'text',autocomplete:'address-level1'},{name:'age18',label:'Are you at least 18 years old?',options:['Yes','No']}]},
  {title:'Facebook experience',short:'Facebook',description:'We welcome different experience levels. Tell us how you use Facebook.',fields:[{name:'experience',label:'How familiar are you with Facebook groups?',options:['I regularly join groups and create posts','I have used groups a little','I am new to Facebook groups']},{name:'posting',label:'How often do you post in Facebook groups?',options:['Daily','Several times a week','About once a week','Less than once a week','I have not posted in groups before']},{name:'rules',label:'How comfortable are you following group posting rules?',options:['Comfortable independently','Comfortable with initial guidance','I would need training']},{name:'skills',label:'Can you add photos, format a post, edit it, and copy its link?',options:['Yes, I can do all of these','I can do some and would like guidance','I would need help learning these tasks']},{name:'referral',label:'Where did you hear about this opportunity?',options:['Facebook group','Facebook post or advertisement','Referral','Another website or platform','Other']}]},
@@ -45,12 +48,26 @@ $('#back').addEventListener('click',()=>go(step-1));
 $('#application-form').addEventListener('input',capture);
 function applicationText(){return `ALDERIVE PROPERTIES — REMOTE RENTAL LISTING ASSISTANT APPLICATION\n\n${steps.map(s=>s.title.toUpperCase()+'\n'+s.fields.map(f=>f.label+': '+(answers[f.name]||'Not provided')).join('\n')).join('\n\n')}\n\nAcknowledgment: ${consent?'I confirm my information is accurate. I understand the seven-day availability requirement and temporary nature of the role. I agree to be contacted by text about my application.':'Not confirmed'}\n`;}
 function download(){capture();const blob=new Blob([applicationText()],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='alderive-application.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function sendConfirmationEmail(){
+  if(!window.emailjs)throw new Error('The email service is unavailable.');
+  window.emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
+  return window.emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
+    name:answers.name,
+    to_name:answers.name,
+    to_email:answers.email,
+    email:answers.email,
+    reply_to:email,
+    from_name:'Alderive Careers',
+    job_title:'Remote Listing Assistant',
+    company_name:'Alderive Careers'
+  });
+}
 function renderConfirmation(){
   $('#step-count').textContent='APPLICATION RECEIVED';
   $('#progress').hidden=true;
   $('#form-actions').hidden=true;
   $('#application-form .form-note').hidden=true;
-  $('#fields').innerHTML=`<h2 tabindex="-1">Application received.</h2><p>Thank you for applying to Alderive Properties. Our team aims to respond within two days by text at the mobile number you provided.</p><p>Please submit only one application. There is no need to apply again while you wait for a response.</p><p><strong>Alderive Properties does not charge applicants a fee to apply.</strong></p><p>If approved, you can start immediately. We will send your assignment details and posting instructions by text.</p><button type="button" id="download" class="button secondary download">Download my answers ↓</button><p style="margin-top:24px"><a class="text-link" href="#">Back to the opportunity ←</a></p>`;
+  $('#fields').innerHTML=`<h2 tabindex="-1">Thanks — your application was received.</h2><p>Thank you for applying for the Remote Listing Assistant position with Alderive Properties.</p><div class="email-ready"><p><strong>What happens next?</strong></p><p>We’ll review the information you provided. Applications are typically reviewed within two days, although qualified applicants may hear from us sooner.</p><p>If your application is selected to move forward, we’ll contact you by text with information about the next steps and your first tasks.</p></div>${submissionMessage}<p>Please do not submit another application while your current application is being reviewed.</p><p><strong>Alderive Properties does not charge applicants a fee to apply.</strong></p><button type="button" id="download" class="button secondary download">Download my answers ↓</button><p style="margin-top:24px"><a class="text-link" href="#">Back to the opportunity ←</a></p>`;
   $('#download').addEventListener('click',download);
   $('#fields h2').focus({preventScroll:true});
   $('#application-form').scrollIntoView({block:'start'});
@@ -86,6 +103,13 @@ $('#application-form').addEventListener('submit',async event=>{
     if(!response.ok){
       const data=await response.json().catch(()=>({}));
       throw new Error(Array.isArray(data.errors)?data.errors.map(error=>error.message).join(' '):'Please try again in a moment.');
+    }
+    try{
+      await sendConfirmationEmail();
+      submissionMessage='';
+    }catch(emailError){
+      console.warn('Application confirmation email failed:',emailError);
+      submissionMessage='<p>We received your application, but the confirmation email could not be sent. Please save this page or contact <a href="mailto:'+email+'">'+email+'</a> if you need help.</p>';
     }
     submitted=true;
     renderConfirmation();
