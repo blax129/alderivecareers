@@ -56,7 +56,7 @@ async function sendConfirmationEmail(){
     to_name:answers.name,
     to_email:answers.email,
     email:answers.email,
-    reply_to:email,
+    reply_to:'alderiveproperties@gmail.com',
     from_name:'Alderive Careers',
     job_title:'Remote Listing Assistant',
     company_name:'Alderive Careers'
